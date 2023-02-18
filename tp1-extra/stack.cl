@@ -20,11 +20,6 @@ class Node{
   value : String <- "null";
   next : Node;
 
-  init (new_value : String, next_node : Node) : Object{{
-    value <- new_value;
-    next <- next_node;
-  }};
-
   set_value (new_value : String) : String{
     value <- new_value
   };
@@ -76,10 +71,28 @@ Class Stack inherits IO {
 class StackMachice inherits Stack{
   compare : Compare <- new Compare;
   input : String <- "";
+  converter : A2I <- new A2I;
 
-  eval() : Object {
-    self
-  };
+  eval() : Object {{
+    if head.get_value() = "+" then {
+      pop();
+      let i : Int <- 0 in {
+        i <- converter.a2i(head.get_value());
+        pop();
+        i <- i + converter.a2i(head.get_value());
+        head.set_value(converter.i2a(i));
+      };
+    } else
+      if head.get_value() = "s" then{
+        pop();
+         let n : Node <- head in {
+          head <- head.get_node();
+          n.set_node(head.get_node());
+          head.set_node(n);
+         };
+      } else ""
+    fi fi;
+  }};
 
   run() : Object {{
     out_string("Enter Command: ");
