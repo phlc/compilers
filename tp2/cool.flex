@@ -5,9 +5,8 @@
 *	 Fernanda Ribeiro Passos
 *	 Juliana Granffild
 *	 Pedro Henrique Lima Carvalho
-*	 Tarcila Fernanda Silva
+*	 Tarcila Fernanda Resende da Silva
 /
-
 /*
  *  The scanner definition for COOL.
  */
@@ -78,7 +77,7 @@ void addToStr(char* str);
 DIGIT 		[0-9]
 LETTER 		[a-zA-Z]
 TYPE_ID 	[A-Z]({LETTER}|{DIGIT})*
-VAR_ID		[a-z]({LETTER}|{DIGIT})*
+OBJECT_ID	[a-z]({LETTER}|{DIGIT})*
 ASSIGN		<-
 LE		<=
 DARROW          =>
@@ -124,11 +123,11 @@ NEWLINE		\n
  /*
   *  The multiple-character operators.
   */
-{DIGIT}+       {
+{DIGIT}+       	{
                     cool_yylval.symbol = inttable.add_string(yytext);
                     return INT_CONST;
-	            }
-{DARROW}		{ return (DARROW); }
+	       	}
+{DARROW}	{   return (DARROW); }
 {LE}            {   return LE; }
 {ASSIGN}        {   return ASSIGN; }
 
@@ -154,8 +153,34 @@ NEWLINE		\n
 (?i:of)         {   return (OF); }
 (?i:new)        {   return (NEW); }
 (?i:not)        {   return (NOT); }
-(?i:le)         { return LE; }
+(?i:le)         {   return (LE); }
 (?i:isvoid)     {   return (ISVOID); }
+
+
+
+ /** For boolean constants 
+ */
+t(?i:rue)       {   
+	                cool_yylval.boolean = true;
+	                return (BOOL_CONST);
+	            }
+f(?i:alse)      {   
+	                cool_yylval.boolean = false;
+	                return (BOOL_CONST);
+	            }
+
+
+ /** Identifiers
+  */
+{TYPE_ID} {
+		   cool_yylval.symbol = stringtable.add_string(yytext);
+		   return (TYPE_ID);
+                 }
+
+{OBJECT_ID}  {
+		   cool_yylval.symbol = stringtable.add_string(yytext);
+                   return (OBJECT_ID);
+		}
 
  /*
   *  String constants (C syntax)
@@ -295,7 +320,7 @@ NEWLINE		\n
                         setErrMsg("Unmatched *)");
                         BEGIN(INITIAL);
                         return ERROR;
-	                }
+	            }
 "--"                {   BEGIN(S_LINE_COMMENT); }
 <S_LINE_COMMENT>.   {}
 <S_LINE_COMMENT>\n  {
@@ -333,7 +358,3 @@ void addToStr(char* str) {
     strcat(string_buf, str);
 }
 
-int main () { 
-  yylex(); 
-  return 0; 
-} 
