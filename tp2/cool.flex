@@ -51,19 +51,15 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
-int comment_depth = 0;
+int commentDepth = 0;
+int stringSize;
 
 
-/* ensures that we do not go over Cool's 1024 char limit */ 
-int string_length;
-
-/* forward declarations */
-bool strTooLong();
-void resetStr();
-void setErrMsg(char* msg);
-void exitStrState(char* msg);
-int strLenErr();
-void addToStr(char* str);
+bool stringOversized(); /* Garantiremos tamanho maximo de 1024 caracteres permitido pela linguagem Cool */
+void resetString();
+void setErrorMessage(char* msg);
+int stringLengthError();
+void addToString(char* str);
 
 
 %}
@@ -75,8 +71,8 @@ void addToStr(char* str);
  */
 
 DIGIT 		[0-9]
-LETTER 		[a-zA-Z]
-TYPEID 	[A-Z]({LETTER}|{DIGIT})*
+LETTER 		[a-zA-Z_]
+TYPEID 		[A-Z]({LETTER}|{DIGIT})*
 OBJECTID	[a-z]({LETTER}|{DIGIT})*
 ASSIGN		<-
 LE		<=
@@ -88,19 +84,20 @@ NEWLINE		\n
  /*
   *  Nested comments
   */
-%x COMMENT
-%x S_LINE_COMMENT
 %x STRING
-%x STRING_ERR
+%x STRING_ERROR
+%x SINGLELINE_COMMENT
+%x MULTILINE_COMMENT
+
 
 %%
  /*
- * Rules  --------------------------------------
+ * Regras  --------------------------------------
  */
 
 
  /*
-  *  The single-character operators.
+  *  Operadores com apenas um caractere.
   */
 
 "+"             {   return '+'; }
@@ -158,7 +155,7 @@ NEWLINE		\n
 
 
 
- /** For boolean constants 
+ /** Para constantes booleanas
  */
 t(?i:rue)       {   
 	                cool_yylval.boolean = true;
@@ -170,17 +167,17 @@ f(?i:alse)      {
 	            }
 
 
- /** Identifiers
+ /** Identificadores
   */
 {TYPEID} {
-		   cool_yylval.symbol = stringtable.add_string(yytext);
+		   cool_yylval.symbol = idtable.add_string(yytext);
 		   return (TYPEID);
                  }
 
 {OBJECTID}  {
-		   cool_yylval.symbol = stringtable.add_string(yytext);
+		   cool_yylval.symbol = idtable.add_string(yytext);
                    return (OBJECTID);
-		}
+}
 
  /*
   *  String constants (C syntax)
@@ -190,171 +187,159 @@ f(?i:alse)      {
   */
 \"              {
                     BEGIN(STRING);
-                    string_length = 0;
+                    stringSize = 0;
 	            }
 <STRING>\"      {
                     cool_yylval.symbol = stringtable.add_string(string_buf);
-                    resetStr();
+                    resetString();
                     BEGIN(INITIAL);
                     return (STR_CONST);
-	            }
+	        }
 <STRING>\0      {
-                    setErrMsg("String contains null character");
-                    resetStr();
-                    BEGIN(STRING_ERR);
+                    setErrorMessage("String contem caractere de fim de linha");
+                    resetString();
+                    BEGIN(STRING_ERROR);
                     return ERROR;
 	            }
 <STRING>\\\0    {
-                    setErrMsg("String contains escaped null character.");
-                    resetStr();
-                    BEGIN(STRING_ERR);
+                    setErrorMessage("String contem caractere de fim de linha.");
+                    resetString();
+                    BEGIN(STRING_ERROR);
                     return ERROR;
 	            }
+<STRING>\\b     {
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
+                    addToString("\b");
+	            }
+<STRING>\\t     {
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
+                    addToString("\t");
+                }
 <STRING>\n      {
-                    setErrMsg("Unterminated string constant");
-                    resetStr();
-
-                    /* assume the programmer just forgot the closing " */
+                    setErrorMessage("Quebra de linha inesperada.");
+                    resetString();
                     curr_lineno++;
                     BEGIN(INITIAL);
                     return ERROR;
 	            }
-  /* this is an escaped backslash '\' followed by an 'n'*/
+
 <STRING>\\n     {
-	                /* Manually change check to handle when we are adding two to string */
-                    if (strTooLong()) { return strLenErr(); }
-                    string_length = string_length + 2;
-                    addToStr("\n");
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize = stringSize + 2;
+                    addToString("\n");
 	            }
- /* this is an escaped newline character  */
 <STRING>\\\n    {
-                    if (strTooLong()) { return strLenErr(); }
-                    string_length++;
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
                     curr_lineno++;
-                    addToStr("\n");
+                    addToString("\n");
                 }
-<STRING>\\t     {
-                    if (strTooLong()) { return strLenErr(); }
-                    string_length++;
-                    addToStr("\t");
-                }
-<STRING>\\b     {
-                    if (strTooLong()) { return strLenErr(); }
-                    string_length++;
-                    addToStr("\b");
-	            }
 <STRING>\\f     {
-                    if (strTooLong()) { return strLenErr(); }
-                    string_length++;
-                    addToStr("\f");
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
+                    addToString("\f");
 	            }
 
- /* All other escaped characters should just return the character. */
 <STRING>\\.     {
-                    if (strTooLong()) { return strLenErr(); }
-                    string_length++;
-                    addToStr(&strdup(yytext)[1]);
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
+                    addToString(&strdup(yytext)[1]);
 	            }
 <STRING><<EOF>> {
-	                setErrMsg("EOF in string constant");
+	                setErrorMessage("EOF em constante do tipo string");
 	                curr_lineno++;
                     BEGIN(INITIAL);
                     return ERROR;
 	            }
 <STRING>.       {
-                    if (strTooLong()) { return strLenErr(); }
-                    string_length++;
-                    addToStr(yytext);
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
+                    addToString(yytext);
 	            }
- /* for certain in-string errors, lexing should resume at an unescaped newline
-  * or a closing " */
-<STRING_ERR>\"  {
+<STRING_ERROR>\"  {
                     BEGIN(INITIAL);
 	            }
-<STRING_ERR>\\\n {
+<STRING_ERROR>\\\n {
 	                curr_lineno++;
                     BEGIN(INITIAL);
                 }
-<STRING_ERR>\n  {
+<STRING_ERROR>\n  {
 	                curr_lineno++;
                     BEGIN(INITIAL);
 	            }
-<STRING_ERR>.   {}
-
- /* eat up everything else
-  * ------------------------------------------------------------------------ */
+<STRING_ERROR>.   {}
 
 \n              {   curr_lineno++; }
- /* Note this is *not* the same list of whitespace chars that can be escaped
-  * in a string */
+
 [ \f\r\t\v]     {}
 .               {   
-	                setErrMsg(yytext);
+	                setErrorMessage(yytext);
                     return ERROR;
                 }
 
 
 
 
- /* Comments
+ /* Comentarios
   * ------------------------------------------------------------------------ */
 "(*"                {
-                        comment_depth++;
-                        BEGIN(COMMENT);
+                        commentDepth++;
+                        BEGIN(MULTILINE_COMMENT);
                     }
-<COMMENT>"(*"       {   comment_depth++; }
-<COMMENT>.          {}
-<COMMENT>\n         {   curr_lineno++; }
-<COMMENT>"*)"       {
-                        comment_depth--;
-                        if (comment_depth == 0) {
+<MULTILINE_COMMENT>"(*"       {   commentDepth++; }
+<MULTILINE_COMMENT>.          {}
+<MULTILINE_COMMENT>\n         {   curr_lineno++; }
+<MULTILINE_COMMENT>"*)"       {
+                        commentDepth--;
+                        if (commentDepth == 0) {
                             BEGIN(INITIAL);
                         }
                     }
-<COMMENT><<EOF>>    {
-                        setErrMsg("EOF in comment");
+<MULTILINE_COMMENT><<EOF>>    {
+                        setErrorMessage("EOF em comentario");
                         BEGIN(INITIAL);
                         return ERROR;
 	                }
 "*)"                {
-                        setErrMsg("Unmatched *)");
+                        setErrorMessage("Fechamento de comentario sem abertura.");
                         BEGIN(INITIAL);
                         return ERROR;
 	            }
-"--"                {   BEGIN(S_LINE_COMMENT); }
-<S_LINE_COMMENT>.   {}
-<S_LINE_COMMENT>\n  {
+"--"                {   BEGIN(SINGLELINE_COMMENT); }
+<SINGLELINE_COMMENT>.   {}
+<SINGLELINE_COMMENT>\n  {
                         curr_lineno++;
                         BEGIN(INITIAL);
                     }
 
 %%
 
-/* SUBROUTINES
-**/
-bool strTooLong() {
-	if (string_length + 1 >= MAX_STR_CONST) {
-		BEGIN(STRING_ERR);
+
+bool stringOversized() {
+	if (stringSize + 1 >= MAX_STR_CONST) {
+		BEGIN(STRING_ERROR);
         return true;
     }
     return false;
 }
 
-void resetStr() {
+void resetString() {
     string_buf[0] = '\0';
 }
 
-void setErrMsg(char* msg) {
+void setErrorMessage(char* msg) {
     cool_yylval.error_msg = msg;
 }
 
-int strLenErr() {
-	resetStr();
-    setErrMsg("String constant too long");
+int stringLengthError() {
+	resetString();
+    setErrorMessage("String excedeu tamanho maximo");
     return ERROR;
 }
 
-void addToStr(char* str) {
+void addToString(char* str) {
     strcat(string_buf, str);
 }
 
