@@ -76,8 +76,8 @@ void addToStr(char* str);
 
 DIGIT 		[0-9]
 LETTER 		[a-zA-Z]
-TYPE_ID 	[A-Z]({LETTER}|{DIGIT})*
-OBJECT_ID	[a-z]({LETTER}|{DIGIT})*
+TYPEID 	[A-Z]({LETTER}|{DIGIT})*
+OBJECTID	[a-z]({LETTER}|{DIGIT})*
 ASSIGN		<-
 LE		<=
 DARROW          =>
@@ -172,14 +172,14 @@ f(?i:alse)      {
 
  /** Identifiers
   */
-{TYPE_ID} {
+{TYPEID} {
 		   cool_yylval.symbol = stringtable.add_string(yytext);
-		   return (TYPE_ID);
+		   return (TYPEID);
                  }
 
-{OBJECT_ID}  {
+{OBJECTID}  {
 		   cool_yylval.symbol = stringtable.add_string(yytext);
-                   return (OBJECT_ID);
+                   return (OBJECTID);
 		}
 
  /*
