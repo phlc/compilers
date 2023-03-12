@@ -153,6 +153,6 @@ Além disso, há uma variável stringSize que é usada para rastrear o tamanho a
 
 O código também lida com comentários aninhados e erros de sequência de escape de string, definindo estados diferentes para a máquina de estados do analisador léxico.
 
-Finalmente, se ocorrer um erro durante a análise léxica, a função setErrorMessage() é chamada para imprimir uma mensagem de erro e interromper o processo de compilação.
+Finalmente, quando ocorre um erro durante a análise léxica, a função setErrorMessage() é chamada para atribuir uma mensagem de erro à variável cool_yylval.error_msg e interromper o processo de compilação. Isso garante que os erros encontrados sejam passados para o parser.
 
 
