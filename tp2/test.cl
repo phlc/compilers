@@ -1,85 +1,10 @@
-(* models one-dimensional cellular automaton on a circle of finite radius
-   arrays are faked as Strings,
-   X's respresent live cells, dots represent dead cells,
-   no error checking is done *)
-class CellularAutomaton inherits IO {
-    population_map : String;
-   
-    init(map : String) : SELF_TYPE {
-        {
-            population_map <- map;
-            self;
-        }
-    };
-   
-    print() : SELF_TYPE {
-        {
-            out_string(population_map.concat("\n"));
-            self;
-        }
-    };
-   
-    num_cells() : Int {
-        population_map.length()
-    };
-   
-    cell(position : Int) : String {
-        population_map.substr(position, 1)
-    };
-   
-    cell_left_neighbor(position : Int) : String {
-        if position = 0 then
-            cell(num_cells() - 1)
-        else
-            cell(position - 1)
-        fi
-    };
-   
-    cell_right_neighbor(position : Int) : String {
-        if position = num_cells() - 1 then
-            cell(0)
-        else
-            cell(position + 1)
-        fi
-    };
-   
-    (* a cell will live if exactly 1 of itself and it's immediate
-       neighbors are alive *)
-    cell_at_next_evolution(position : Int) : String {
-        if (if cell(position) = "X" then 1 else 0 fi
-            + if cell_left_neighbor(position) = "X" then 1 else 0 fi
-            + if cell_right_neighbor(position) = "X" then 1 else 0 fi
-            = 1)
-        then
-            "X"
-        else
-            '.'
-        fi
-    };
-   
-    evolve() : SELF_TYPE {
-        (let position : Int in
-        (let num : Int <- num_cells[] in
-        (let temp : String in
-            {
-                while position < num loop
-                    {
-                        temp <- temp.concat(cell_at_next_evolution(position));
-                        position <- position + 1;
-                    }
-                pool;
-                population_map <- temp;
-                self;
-            }
-        ) ) )
-    };
-};
 
 class Main {
     cells : CellularAutomaton;
    
     main() : SELF_TYPE {
         {
+            String teste <- "Testes do analisador lexico!";
             cells <- (new CellularAutomaton).init("         X         ");
             cells.print();
             (let countdown : Int <- 20 in
@@ -88,94 +13,27 @@ class Main {
                         cells.evolve();
                         cells.print();
                         countdown <- countdown - 1;
+                    }
                     
                 pool
-            );  (* end let countdown
+            );  (* end let countdown *)
             self;
         }
     };
 };
 
-
-(* no error *)
+(* sem erro *)
 class A {
 };
 
-(* error:  b is not a type identifier *)
-Class b inherits A {
-};
-
-(* error:  a is not a type identifier *)
-Class C inherits a {
-};
-
-(* error:  keyword inherits is misspelled *)
+(* erro:  inherits esta escrito errado *)
 Class D inherts A {
 };
 
-(* error:  closing brace is missing *)
+(* erro: falta as chaves de fechamento de escopo *)
 Class E inherits A {
 ;
 
-
-class Main inherits IO {
-    main() : SELF_TYPE {
-	(let c : Complex <- (new Complex).init(1, 1) in
-	    if c.reflect_X().reflect_Y() = c.reflect_0()
-	    then out_string("=)\n")
-	    else out_string("=(\n")
-	    fi
-	)
-    };
-};
-
--- devera reconhecer complex como OBJECTID e não TYPEID
-class complex inherits IO {
-    x : Int;
-    y : Int;
-    aletoria: Int;
-
-    init(a : Int, b : Int) : Complex {
-	{
-	    x = a;
-	    y = b;
-	    self;
-        aletoria = a * b - 360 * (new Random).getNumber();
-	}
-    };
-
-    print() : Object {
-	if y = 0
-	then out_int(x)
-	else out_int(x).out_string("+").out_int(y).out_string("I")
-	fi
-    };
-
-    reflect_0() : Complex {
-	{
-	    x = ~x;
-	    y = ~y;
-	    self;
-	}
-    };
-
-    reflect_X() : Complex {
-	{
-	    y = ~y;
-	    self;
-	}
-    };
-
-    reflect_Y() : Complex {
-	{
-	    x = ~x;
-	    self;
-	}
-    };
-};
-
-
----------------------------------------------------------------------------------------------------
 --TESTES PARA IDENTIFICADORES
 3invalido
 valido3
@@ -251,7 +109,6 @@ linhas
 (* comentario (*aninhado (*(*))))
 (*-- continuando o teste
 de comentariao de multiplas linhas)
-(* isso "estaria certo*)
 
 
 
