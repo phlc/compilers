@@ -101,18 +101,18 @@ NEWLINE		\n
   */
 
 "+"             {   return '+'; }
-"/"             {   return '/'; }
 "-"             {   return '-'; }
 "*"             {   return '*'; }
+"/"             {   return '/'; }
 "="             {   return '='; }
 "<"             {   return '<'; }
+";"             {   return ';'; }
+":"             {   return ':'; }
 "."             {   return '.'; }
 "~"             {   return '~'; }
 ","             {   return ','; }
-";"             {   return ';'; }
-":"             {   return ':'; }
-"("             {   return '('; }
 ")"             {   return ')'; }
+"("             {   return '('; }
 "@"             {   return '@'; }
 "{"             {   return '{'; }
 "}"             {   return '}'; }
@@ -124,8 +124,8 @@ NEWLINE		\n
                     cool_yylval.symbol = inttable.add_string(yytext);
                     return INT_CONST;
 	       	}
-{DARROW}	{   return (DARROW); }
 {LE}            {   return LE; }
+{DARROW}	{   return (DARROW); }
 {ASSIGN}        {   return ASSIGN; }
 
  /*
@@ -207,16 +207,7 @@ f(?i:alse)      {
                     BEGIN(STRING_ERROR);
                     return ERROR;
 	            }
-<STRING>\\b     {
-                    if (stringOversized()) { return stringLengthError(); }
-                    stringSize++;
-                    addToString("\b");
-	            }
-<STRING>\\t     {
-                    if (stringOversized()) { return stringLengthError(); }
-                    stringSize++;
-                    addToString("\t");
-                }
+
 <STRING>\n      {
                     setErrorMessage("Quebra de linha inesperada.");
                     resetString();
@@ -236,6 +227,16 @@ f(?i:alse)      {
                     curr_lineno++;
                     addToString("\n");
                 }
+<STRING>\\t     {
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
+                    addToString("\t");
+                }
+<STRING>\\b     {
+                    if (stringOversized()) { return stringLengthError(); }
+                    stringSize++;
+                    addToString("\b");
+	            }
 <STRING>\\f     {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize++;
