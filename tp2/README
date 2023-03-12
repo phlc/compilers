@@ -158,58 +158,6 @@ O código também lida com comentários aninhados e erros de sequência de escap
 Finalmente, quando ocorre um erro durante a análise léxica, a função setErrorMessage() é chamada para atribuir uma mensagem de erro à variável cool_yylval.error_msg e interromper o processo de compilação. Isso garante que os erros encontrados sejam passados para o parser.
 
 
-                                                    ------------------------------
-Testes:
-
-A maioria dos testes estão focados nas rotinas auxiliares, para certificarmos que o programa identifica apenas os tokens adequados e respeitem as regras.
-
-
-Teste_01: Erro no Final da String
-//Testa se o scanner reconhece a ausência de um dos pares de aspas duplas da string.
-
-
-class Main inherits IO {
-  main(): Object {{
-    out_string("Hello World!);
-  }};
-};
-
-------------------------------
-
-Teste_02: Erro de indicação de comentário
-//Testa se o scanner reconhece a ausência de *) que indica o término de um comentário.
-
-
-class Main inherits IO {
-  main(): Object {{
-    (* Exibe na tela a frase: Hello World!
-    out_string("Hello World!);
-  }};
-};
-------------------------------
-
-teste_03: Erro de stringOversized
-//Testa se o scanner reconhece a limite máximo de caracteres permitidos (1024).
-
-class Main inherits IO {
-  main(): Object {{
-    out_string("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-  }};
-};
-
-------------------------------
-
-Teste_04: Soma de inteiros
-//Testa se o scanner reconhece inteiros e operador de soma
-
-class Main inherits IO {
-  main(): Object {{
-    int x=3;
-    int y=5;
-    int result = x+y; 
-    out_string(result);
-  }};
-};
-------------------------------
+---------------------------------------------------------------------------------------------------
 
 
