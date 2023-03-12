@@ -118,8 +118,41 @@ Instructions
 
 	GOOD LUCK!
 
----8<------8<------8<------8<---cut here---8<------8<------8<------8<---
+--------------------------------------------GRUPO--------------------------------------------------
+Ana Laura Fernandes de Oliveira
+Fernanda Ribeiro Passos
+Juliana Granffild
+Pedro Henrique Lima Carvalho
+Tarcila Fernanda Resende da Silva
 
-Write-up for PA2
-----------------
+--------------------------------SOBRE O CODIGO DESENVOLVIDO----------------------------------------
+
+O código desenvolvido é um analisador léxico implementado usando a ferramenta Flex para a linguagem de programação COOL. Neste documento, explicaremos a estrutura do codigo e quais tratamentos de erros foram adotados. E importante ressaltar que, para garantirmos a corretude do analisador, sua implementação foi inteiramente baseada no manual da linguagem COOL, de forma a respeitarmos a sua sintaxe. Além disso, testes abrangentes foram aplicados para garantir a veracidade dos outputs produzidos e a eficácia dos tratamentos de erros aplicados.
+
+O analisador léxico é responsável por quebrar o código fonte em "tokens" (como palavras-chave, identificadores, símbolos, literais, etc.) e passá-los para o analisador sintático. Futuramente, o analisador sintático utilizará esses tokens para construir uma árvore de análise sintática que representa a estrutura do programa.
+
+O arquivo começa com uma seção entre %{ e %}. Tudo o que está dentro dessas delimitadoras é copiado literalmente para o arquivo de saída. Nessa seção, estão incluídas as bibliotecas que o analisador usa e algumas definições globais, como o tamanho máximo das constantes de string e os identificadores usados pelo compilador. Também há algumas definições de funções que são usadas posteriormente no código.
+
+A seção seguinte define algumas expressões regulares usadas para reconhecer os diferentes tipos de tokens. Algumas dessas expressões regulares representam operadores de um único caractere, como + e -, enquanto outras representam operadores de vários caracteres, como <= e =>. Além disso, existem expressões regulares para palavras-chave, identificadores, números inteiros e constantes booleanas.
+
+Depois de definir as expressões regulares, o código especifica as regras para reconhecer os diferentes tipos de tokens. Cada regra é composta de uma expressão regular que reconhece o token e um bloco de código que é executado quando a expressão é correspondida. Por exemplo, a seguinte regra reconhece um sinal de adição:
+
+"+" { return '+'; }
+
+A palavra-chave return especifica que o token é um sinal de adição, e o valor de retorno é o caractere +.
+
+Além disso, o código define várias variáveis globais, incluindo um buffer para armazenar constantes de string, uma variável para controlar a profundidade de aninhamento de comentários e variáveis para rastrear informações de depuração, como a linha atual e uma flag verbose.
+
+Tratamento de erros:
+
+O código também trata vários tipos de erros que podem ocorrer durante a análise léxica.
+
+Por exemplo, há uma função stringOversized() que verifica se uma constante de string é maior que o tamanho máximo permitido pela linguagem COOL (1024 caracteres). Se uma constante de string for maior que esse tamanho, um erro é gerado.
+
+Além disso, há uma variável stringSize que é usada para rastrear o tamanho atual de uma constante de string sendo lida. Se uma constante de string contiver mais de 1024 caracteres, a função stringLengthError() é chamada para relatar o erro.
+
+O código também lida com comentários aninhados e erros de sequência de escape de string, definindo estados diferentes para a máquina de estados do analisador léxico.
+
+Finalmente, se ocorrer um erro durante a análise léxica, a função setErrorMessage() é chamada para imprimir uma mensagem de erro e interromper o processo de compilação.
+
 
