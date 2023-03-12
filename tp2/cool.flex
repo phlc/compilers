@@ -100,33 +100,33 @@ NEWLINE		\n
   *  Operadores com apenas um caractere.
   */
 
-"+"             {   return '+'; }
-"-"             {   return '-'; }
-"*"             {   return '*'; }
-"/"             {   return '/'; }
-"="             {   return '='; }
-"<"             {   return '<'; }
-";"             {   return ';'; }
-":"             {   return ':'; }
-"."             {   return '.'; }
-"~"             {   return '~'; }
-","             {   return ','; }
-")"             {   return ')'; }
-"("             {   return '('; }
-"@"             {   return '@'; }
-"{"             {   return '{'; }
-"}"             {   return '}'; }
+"+"             { return '+'; }
+"-"             { return '-'; }
+"*"             { return '*'; }
+"/"             { return '/'; }
+"="             { return '='; }
+"<"             { return '<'; }
+";"             { return ';'; }
+":"             { return ':'; }
+"."             { return '.'; }
+"~"             { return '~'; }
+","             { return ','; }
+")"             { return ')'; }
+"("             { return '('; }
+"@"             { return '@'; }
+"{"             { return '{'; }
+"}"             { return '}'; }
 
  /*
   *  The multiple-character operators.
   */
 {DIGIT}+       	{
-                    cool_yylval.symbol = inttable.add_string(yytext);
-                    return INT_CONST;
+                  cool_yylval.symbol = inttable.add_string(yytext);
+                  return INT_CONST;
 	       	}
-{LE}            {   return LE; }
-{DARROW}	{   return (DARROW); }
-{ASSIGN}        {   return ASSIGN; }
+{LE}            { return LE; }
+{DARROW}	{ return (DARROW); }
+{ASSIGN}        { return ASSIGN; }
 
  /*
   * Keywords are case-insensitive except for the values true and false,
@@ -134,41 +134,42 @@ NEWLINE		\n
   */
 
 
-(?i:class)      {   return (CLASS); }
-(?i:else)       {   return (ELSE); }
-(?i:fi)         {   return (FI); }
-(?i:if)         {   return (IF); }
-(?i:in)         {   return (IN); }
-(?i:inherits)   {   return (INHERITS); }
-(?i:let)        {   return (LET); }
-(?i:loop)       {   return (LOOP); }
-(?i:pool)       {   return (POOL); }
-(?i:then)       {   return (THEN); }
-(?i:while)      {   return (WHILE); }
-(?i:case)       {   return (CASE); }
-(?i:esac)       {   return (ESAC); }
-(?i:of)         {   return (OF); }
-(?i:new)        {   return (NEW); }
-(?i:not)        {   return (NOT); }
-(?i:le)         {   return (LE); }
-(?i:isvoid)     {   return (ISVOID); }
+(?i:class)      { return (CLASS); }
+(?i:else)       { return (ELSE); }
+(?i:fi)         { return (FI); }
+(?i:if)         { return (IF); }
+(?i:in)         { return (IN); }
+(?i:inherits)   { return (INHERITS); }
+(?i:let)        { return (LET); }
+(?i:loop)       { return (LOOP); }
+(?i:pool)       { return (POOL); }
+(?i:then)       { return (THEN); }
+(?i:while)      { return (WHILE); }
+(?i:case)       { return (CASE); }
+(?i:esac)       { return (ESAC); }
+(?i:of)         { return (OF); }
+(?i:new)        { return (NEW); }
+(?i:not)        { return (NOT); }
+(?i:le)         { return (LE); }
+(?i:isvoid)     { return (ISVOID); }
 
 
 
- /** Para constantes booleanas
- */
+ /** Constantes booleanas*/
+
 t(?i:rue)       {   
-	                cool_yylval.boolean = true;
-	                return (BOOL_CONST);
-	            }
+	           cool_yylval.boolean = true;
+	           return (BOOL_CONST);
+	        }
+
 f(?i:alse)      {   
-	                cool_yylval.boolean = false;
-	                return (BOOL_CONST);
-	            }
+	           cool_yylval.boolean = false;
+	           return (BOOL_CONST);
+	        }
 
 
- /** Identificadores
-  */
+ /** Identificadores*/
+
 {TYPEID} {
 		   cool_yylval.symbol = idtable.add_string(yytext);
 		   return (TYPEID);
@@ -185,28 +186,32 @@ f(?i:alse)      {
   *  \n \t \b \f, the result is c.
   *
   */
+
 \"              {
                     BEGIN(STRING);
                     stringSize = 0;
-	            }
+	        }
+
 <STRING>\"      {
                     cool_yylval.symbol = stringtable.add_string(string_buf);
                     resetString();
                     BEGIN(INITIAL);
                     return (STR_CONST);
 	        }
+
 <STRING>\0      {
                     setErrorMessage("String contem caractere de fim de linha");
                     resetString();
                     BEGIN(STRING_ERROR);
                     return ERROR;
-	            }
+	        }
+
 <STRING>\\\0    {
                     setErrorMessage("String contem caractere de fim de linha.");
                     resetString();
                     BEGIN(STRING_ERROR);
                     return ERROR;
-	            }
+	        }
 
 <STRING>\n      {
                     setErrorMessage("Quebra de linha inesperada.");
@@ -214,69 +219,79 @@ f(?i:alse)      {
                     curr_lineno++;
                     BEGIN(INITIAL);
                     return ERROR;
-	            }
+	        }
 
 <STRING>\\n     {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize = stringSize + 2;
                     addToString("\n");
-	            }
+	        }
+
 <STRING>\\\n    {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize++;
                     curr_lineno++;
                     addToString("\n");
                 }
+
 <STRING>\\t     {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize++;
                     addToString("\t");
                 }
+
 <STRING>\\b     {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize++;
                     addToString("\b");
-	            }
+	        }
+
 <STRING>\\f     {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize++;
                     addToString("\f");
-	            }
+	        }
 
 <STRING>\\.     {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize++;
                     addToString(&strdup(yytext)[1]);
-	            }
+	        }
+
 <STRING><<EOF>> {
-	                setErrorMessage("EOF em constante do tipo string");
-	                curr_lineno++;
+	            setErrorMessage("EOF em constante do tipo string");
+	            curr_lineno++;
                     BEGIN(INITIAL);
                     return ERROR;
-	            }
+	        }
+
 <STRING>.       {
                     if (stringOversized()) { return stringLengthError(); }
                     stringSize++;
                     addToString(yytext);
-	            }
+	        }
+
 <STRING_ERROR>\"  {
                     BEGIN(INITIAL);
-	            }
+	          }
+
 <STRING_ERROR>\\\n {
 	                curr_lineno++;
-                    BEGIN(INITIAL);
-                }
+                    	BEGIN(INITIAL);
+                   }
+
 <STRING_ERROR>\n  {
 	                curr_lineno++;
-                    BEGIN(INITIAL);
-	            }
+                    	BEGIN(INITIAL);
+	          }
 <STRING_ERROR>.   {}
 
-\n              {   curr_lineno++; }
+\n              { curr_lineno++; }
 
 [ \f\r\t\v]     {}
+
 .               {   
-	                setErrorMessage(yytext);
+	            setErrorMessage(yytext);
                     return ERROR;
                 }
 
@@ -289,31 +304,37 @@ f(?i:alse)      {
                         commentDepth++;
                         BEGIN(MULTILINE_COMMENT);
                     }
+
 <MULTILINE_COMMENT>"(*"       {   commentDepth++; }
+
 <MULTILINE_COMMENT>.          {}
+
 <MULTILINE_COMMENT>\n         {   curr_lineno++; }
-<MULTILINE_COMMENT>"*)"       {
-                        commentDepth--;
-                        if (commentDepth == 0) {
-                            BEGIN(INITIAL);
-                        }
-                    }
-<MULTILINE_COMMENT><<EOF>>    {
-                        setErrorMessage("EOF em comentario");
-                        BEGIN(INITIAL);
-                        return ERROR;
-	                }
+
+<MULTILINE_COMMENT>"*)"      {
+                        	commentDepth--;
+                        	if (commentDepth == 0) {BEGIN(INITIAL);}
+                    	     }
+
+<MULTILINE_COMMENT><<EOF>>   {
+                        	setErrorMessage("EOF em comentario");
+                        	BEGIN(INITIAL);
+                        	return ERROR;
+	                     }
 "*)"                {
                         setErrorMessage("Fechamento de comentario sem abertura.");
                         BEGIN(INITIAL);
                         return ERROR;
 	            }
+
 "--"                {   BEGIN(SINGLELINE_COMMENT); }
+
 <SINGLELINE_COMMENT>.   {}
+
 <SINGLELINE_COMMENT>\n  {
-                        curr_lineno++;
-                        BEGIN(INITIAL);
-                    }
+                           curr_lineno++;
+                           BEGIN(INITIAL);
+                    	}
 
 %%
 
@@ -335,7 +356,7 @@ void setErrorMessage(char* msg) {
 }
 
 int stringLengthError() {
-	resetString();
+    resetString();
     setErrorMessage("String excedeu tamanho maximo");
     return ERROR;
 }
