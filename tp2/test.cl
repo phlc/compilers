@@ -176,17 +176,26 @@ class complex inherits IO {
 
 
 ---------------------------------------------------------------------------------------------------
+--TESTES PARA IDENTIFICADORES
+3invalido
+valido3
+valido_3
+valido_
+val1do
+*invalido
+-INVALIDO
+_invalido
+in-va-li-do-
+@invalido
 
 --TESTE DE SINTAXE DE EXPRESSOES CONDICIONAIS/PALAVRAS RESERVADAS
 
 Int a;	
 String b;
-if a==2 then
-	b<-'dois'
-elif a<0 then
-	b<-"negativo!"
-else then
-	"positivo!"=>b
+
+if a==2 then b<-'dois'
+elif a<0 then b<-"negativo!"
+else then "positivo!"=>b
 
 new Teste()
 
@@ -197,6 +206,28 @@ new Teste()
 
 "O \0 deve ser interpretado como 0, mas nao deve gerar erro. "
 
+
+
+--TESTES PARA CARACTERES DE ESCAPE
+\'\#\%\$\&\*\\\/\(\[\{\)\]\}\"\~\^\t\r\v\n\0
+
+--TESTES PARA DIGITOS
+1234567890
+022
+00000000000
+0x2BC
+
+
+--TESTES DE OPERADORES
+i++
+<=
+7-4=3
+8+5=13
+>=
+2>1
+3<5
+3<=7
+>
 
 --TESTES DE COMENTARIOS
 
@@ -221,40 +252,6 @@ linhas
 (*-- continuando o teste
 de comentariao de multiplas linhas)
 (* isso "estaria certo*)
-
---TESTES PARA CARACTERES DE ESCAPE
-\'\#\%\$\&\*\\\/\(\[\{\)\]\}\"\~\^\t\r\v\n\0
-
---TESTES PARA DIGITOS
-1234567890
-022
-00000000000
-0x2BC
-
---TESTES PARA IDENTIFICADORES
-3invalido
-valido3
-valido_3
-valido_
-val1do
-*invalido
--INVALIDO
-_invalido
-in-va-li-do-
-@invalido
-
---TESTES DE OPERADORES
-i++
-<=
-7-4=3
-8+5=13
->=
-2>1
-3<5
-3<=7
->
-
-
 
 
 
