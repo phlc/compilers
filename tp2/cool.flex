@@ -120,6 +120,12 @@ NEWLINE		\n
  /*
   *  The multiple-character operators.
   */
+
+{DIGIT}+{LETTER}[0-9a-zA-Z_]*   {
+			setErrorMessage("Objeto ou identificador iniciando com numero");
+			return ERROR;		
+		}
+
 {DIGIT}+       	{
                   cool_yylval.symbol = inttable.add_string(yytext);
                   return INT_CONST;
