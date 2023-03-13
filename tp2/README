@@ -160,4 +160,8 @@ Finalmente, quando ocorre um erro durante a análise léxica, a função setErro
 
 ---------------------------------------------------------------------------------------------------
 
-
+Os testes foram realizados focados em validar se as regras de identificação de tokens definidas pelo analisador léxico os reconhecia corretamente. O código do arquivo de teste contempla todas as unidades léxicas da linguagem Cool, sendo elas: inteiros, identificadores de tipos e objetos, notações espaciais, strings, palavras-chaves e espaços em branco. Como dito, além de avaliar se cada unidade léxica era identificada corretamente verificou-se cenários em que a unidade léxica foi definida incorretamente, como por exemplo:
+  - strings maiores do que o tamanho permitido pela linguagem cool
+  - strings sem EOF
+  - identificadores iniciados por digitos ou caracteres especiais
+  - comentários de multiplas linhas sem inicio correto  
